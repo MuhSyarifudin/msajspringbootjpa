@@ -9,62 +9,98 @@ Version 1.1
 */
 
 
+import com.juaracoding.msajspringbootjpa.configuration.OtherConfig;
 import com.juaracoding.msajspringbootjpa.handler.ResourceNotFoundException;
+import com.juaracoding.msajspringbootjpa.handler.ResponseHandler;
 import com.juaracoding.msajspringbootjpa.model.CategoryProduct;
 import com.juaracoding.msajspringbootjpa.repo.CategoryProductRepo;
 import com.juaracoding.msajspringbootjpa.utils.ConstantMessage;
+import com.juaracoding.msajspringbootjpa.utils.LoggingFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @Transactional
 public class CategoryProductService {
+
+
+
     private CategoryProductRepo categoryProductRepo;
+    private String [] strExceptionArr = new String[2];
+
 
 
     @Autowired
     public CategoryProductService(CategoryProductRepo categoryProductRepo) {
+        strExceptionArr[0] = "CategoryProductService";
         this.categoryProductRepo = categoryProductRepo;
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     public void saveDataCategory(CategoryProduct categoryProduct){
-//        if(categoryProduct.getNameCategoryProduct().equals("") || categoryProduct.getNameCategoryProduct()==null)
-//        {
-//            if(categoryProduct.getNameCategoryProduct().length()>40)
-//            {
-//
-//            }
-//        }
-//        if(categoryProduct.getStrDescCategoryProduct().equals("") || categoryProduct.getStrDescCategoryProduct()==null)
-//        {
-//
-//        }
+
         categoryProductRepo.save(categoryProduct);
+
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void saveAllCategory(List<CategoryProduct> listCategoryProduct){
         categoryProductRepo.saveAll(listCategoryProduct);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, SQLException.class})
+    public ResponseEntity<Object> saveUploadFile(List<CategoryProduct> listCategoryProduct,
+                                                 MultipartFile multipartFile,
+                                                 WebRequest request) throws ResourceNotFoundException {
+        List<CategoryProduct> categoryProductList = null;
+        String strMessage = ConstantMessage.SUCCESS_SAVE;
+        try
+        {
+            categoryProductList = categoryProductRepo.saveAll(listCategoryProduct);
+            if(categoryProductList.size()==0)
+            {
+//                strExceptionArr[1]="saveUploadFile(List<CategoryProduct> listCategoryProduct, MultipartFile multipartFile, WebRequest request)---LINE67";
+//                LoggingFile.exceptionStringz(strExceptionArr,new ResourceNotFoundException(ConstantMessage.ERROR_EMPTY_FILE +" -- "+multipartFile.getOriginalFilename()), OtherConfig.getFlagLogging());
+                return new ResponseHandler().generateResponse(ConstantMessage.ERROR_EMPTY_FILE +" -- "+multipartFile.getOriginalFilename(),
+                        HttpStatus.BAD_REQUEST,null,"FI01020",request);
+            }
+        }
+        catch (Exception e)
+        {
+            strMessage = e.getMessage();
+            strExceptionArr[1]="saveUploadFile(List<CategoryProduct> listCategoryProduct, MultipartFile multipartFile, WebRequest request) --- LINE 77";
+            LoggingFile.exceptionStringz(strExceptionArr,e, OtherConfig.getFlagLogging());
+            return new ResponseHandler().generateResponse(strMessage,
+                    HttpStatus.BAD_REQUEST,null,"FI01021",request);
+        }
+
+        return new ResponseHandler().generateResponse(strMessage,
+                HttpStatus.CREATED,null,null,request);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public void updateCategory(CategoryProduct categoryProduct,Long id) throws  Exception
     {
         CategoryProduct cProduct = categoryProductRepo.findById(id).orElseThrow (
-                ()->  new ResourceNotFoundException(ConstantMessage.WELCOME_MESSAGE)
+                ()->  new ResourceNotFoundException("Data tidak ditemukan")
         );
 
         /*
             SELECT * FROM MstCategoryProduct WHERE IDCategoryProduct = ?
-            cProduct.getNameCategoryProduct();//ALAT ELEKTRONIK
-            cProduct.getStrDescCategoryProduct();//seluruh peralatan yang disentuh nanti nyetrum
          */
         if(cProduct!=null){
             cProduct.setNameCategoryProduct(categoryProduct.getNameCategoryProduct());
@@ -112,6 +148,9 @@ public class CategoryProductService {
             SELECT * FROM MstCategoryProduct WHERE IDCategoryProduct = ?
          */
     }
+
+
+
 
 
 }

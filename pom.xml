@@ -21,6 +21,19 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
@@ -139,7 +152,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>demo</finalName>
+        <finalName>docuApiMSAJSpringbootJPA</finalName>
     </build>
 
 </project>
