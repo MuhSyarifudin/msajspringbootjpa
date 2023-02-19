@@ -43,6 +43,9 @@ public class TugasA {
     @Column(name = "MasihHidup", nullable = false)
     private Boolean masihHidup;
 
+    /*
+    Start Audit
+     */
     @Column(name = "CreatedDate", nullable = false, length = 7)
     private Date createdDate = new Date();
 
@@ -52,6 +55,9 @@ public class TugasA {
     @Column(name = "ModifiedDate", length = 7)
     private Date modifiedDate;
 
+    /*
+    End Audit
+    */
     @Column(name = "isDelete",nullable = false)
     private Short isDelete = 1;
 
