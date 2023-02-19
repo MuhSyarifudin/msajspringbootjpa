@@ -75,7 +75,11 @@ public class CategoryProductController {
         categoryProductService.saveDataCategory(categoryProduct);
 
         return new ResponseHandler().
-                generateResponse(ConstantMessage.SUCCESS_FIND_BY, HttpStatus.OK,null,null,null);
+                generateResponse(ConstantMessage.SUCCESS_FIND_BY,
+                        HttpStatus.OK,
+                        null,
+                        null,
+                        null);
     }
 
     @PostMapping("/v1/sl")
