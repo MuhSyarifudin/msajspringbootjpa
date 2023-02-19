@@ -14,6 +14,8 @@ import com.juaracoding.msajspringbootjpa.repo.ProductRepo;
 import com.juaracoding.msajspringbootjpa.utils.ConstantMessage;
 import com.juaracoding.msajspringbootjpa.utils.LoggingFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,4 +53,7 @@ public class ProductService {
                 HttpStatus.CREATED,null,null,null);
     }
 
+    public Page<Product> findPageSortBy(Pageable pageable) {
+        return productRepo.findAll(pageable);
+    }
 }
